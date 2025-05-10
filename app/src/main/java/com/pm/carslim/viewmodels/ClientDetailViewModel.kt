@@ -1,14 +1,14 @@
 package com.pm.carslim.viewmodels
 
 import android.util.Log
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pm.carslim.data.models.Client
 import com.pm.carslim.data.models.Facture
 import com.pm.carslim.data.remote.ApiService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ClientDetailViewModel(private val api: ApiService) : ViewModel() {

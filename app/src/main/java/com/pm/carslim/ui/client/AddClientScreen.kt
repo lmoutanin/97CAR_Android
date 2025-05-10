@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -33,8 +34,7 @@ import com.pm.carslim.viewmodels.ClientViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddClientScreen(
-    clientViewModel: ClientViewModel,
-    onBackPressed: () -> Unit
+    clientViewModel: ClientViewModel, onBackPressed: () -> Unit
 ) {
     var nom by remember { mutableStateOf("") }
     var prenom by remember { mutableStateOf("") }
@@ -54,57 +54,49 @@ fun AddClientScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Ajout d'un client")
-                    }
+    Scaffold(topBar = {
+        TopAppBar(modifier = Modifier
+            .padding(top = 20.dp, start = 10.dp, end = 25.dp)
+            .fillMaxWidth(),
+            title = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                ) {
+                    Text("Ajout d'un client")
                 }
-            )
-        }
-    ) { padding ->
+            })
+    }) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
 
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                OutlinedTextField(
-                    value = nom,
+                OutlinedTextField(value = nom,
                     onValueChange = { nom = it },
                     label = { Text("Nom") })
-                OutlinedTextField(
-                    value = prenom,
+                OutlinedTextField(value = prenom,
                     onValueChange = { prenom = it },
                     label = { Text("Prénom") })
-                OutlinedTextField(
-                    value = telephone,
+                OutlinedTextField(value = telephone,
                     onValueChange = { telephone = it },
                     label = { Text("Téléphone") })
-                OutlinedTextField(
-                    value = mel,
+                OutlinedTextField(value = mel,
                     onValueChange = { mel = it },
                     label = { Text("Email") })
-                OutlinedTextField(
-                    value = adresse,
+                OutlinedTextField(value = adresse,
                     onValueChange = { adresse = it },
                     label = { Text("Adresse") })
-                OutlinedTextField(
-                    value = codePostal,
+                OutlinedTextField(value = codePostal,
                     onValueChange = { codePostal = it },
                     label = { Text("Code Postal") })
-                OutlinedTextField(
-                    value = ville,
+                OutlinedTextField(value = ville,
                     onValueChange = { ville = it },
                     label = { Text("Ville") })
 
@@ -117,21 +109,20 @@ fun AddClientScreen(
                 ) {
                     Button(
                         onClick = {
-                            val client = Client(
-                                nom = nom,
+                            val client = Client(nom = nom,
                                 prenom = prenom,
                                 telephone = telephone.takeIf { it.isNotEmpty() },
                                 mel = mel.takeIf { it.isNotEmpty() },
                                 adresse = adresse.takeIf { it.isNotEmpty() },
                                 code_postal = codePostal.takeIf { it.isNotEmpty() },
-                                ville = ville.takeIf { it.isNotEmpty() }
-                            )
+                                ville = ville.takeIf { it.isNotEmpty() })
                             clientViewModel.addClient(client)
                             showSuccessMessage = true
                             onBackPressed()
                         },
-                        modifier = Modifier
-                            .padding(top = 16.dp)
+                        modifier = Modifier.padding(top = 16.dp),
+                        shape = RoundedCornerShape(2.dp)
+
                     ) {
                         Text("Ajouter")
                     }
@@ -151,9 +142,6 @@ fun PreviewAddClientScreen() {
     }
 
     CarSlimTheme {
-        AddClientScreen(
-            clientViewModel = fakeViewModel,
-            onBackPressed = {}
-        )
+        AddClientScreen(clientViewModel = fakeViewModel, onBackPressed = {})
     }
 }

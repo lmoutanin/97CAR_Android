@@ -24,6 +24,7 @@ open class ClientViewModel : ViewModel() {
     init {
         fetchClients()
     }
+
     fun fetchClients() {
         viewModelScope.launch {
             try {

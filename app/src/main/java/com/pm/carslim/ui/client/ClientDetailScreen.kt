@@ -50,25 +50,21 @@ fun ClientDetailScreen(
     val client by viewModelClient.client.collectAsState()
     val factures by viewModelClient.factures.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Détails du client")
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    Scaffold(topBar = {
+        TopAppBar(modifier = Modifier
+
+            .fillMaxWidth(), title = {
+            Box(
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+            ) {
+                Text("Détails du client")
+            }
+        }, navigationIcon = {
+            IconButton(onClick = onBackPressed) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+            }
+        })
+    }) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -130,40 +126,37 @@ fun ClientDetailScreen(
                         LazyColumn(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(
-                                count = factures.size,
-                                itemContent = { index ->
-                                    val facture = factures[index]
-                                    Card(
+                            items(count = factures.size, itemContent = { index ->
+                                val facture = factures[index]
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            navController.navigate("invoice_detail/${facture.id_facture}")
+                                        },
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                ) {
+                                    Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable {
-                                                navController.navigate("invoice_detail/${facture.id_facture}")
-                                            },
-                                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(16.dp),
-                                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            Text(
-                                                text = "Facture #${facture.id_facture}",
-                                                style = MaterialTheme.typography.titleMedium
-                                            )
-                                            Text(
-                                                text = "Date : ${facture.date}",
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-                                            Text(
-                                                text = "Montant total : ${facture.montant} €",
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-                                        }
+                                        Text(
+                                            text = "Facture #${facture.id_facture}",
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Text(
+                                            text = "Date : ${facture.date}",
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Text(
+                                            text = "Montant total : ${facture.montant} €",
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
                                     }
                                 }
-                            )
+                            })
                         }
                     } else {
                         Text(
@@ -185,8 +178,7 @@ fun ClientDetailScreen(
 @Composable
 fun DetailRow(icon: String, label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = "$icon $label :")
         Text(text = value)
