@@ -57,4 +57,35 @@ open class ClientViewModel : ViewModel() {
             }
         }
     }
+
+    open fun editClient(client: Client) {
+        viewModelScope.launch {
+            try {
+                RetrofitInstance.api.editClient(client.id_client.toString(),client)
+                Log.d("API", "modification un client")
+                fetchClients() // Rafraîchir la liste après la modification
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Erreur lors de  la modification d'un client: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    open fun deleteClient(idClient: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.api.deleteClientById(idClient)
+                if (response.isSuccessful) {
+                    Log.d("API", "Client supprimé avec succès")
+                    fetchClients() // Rafraîchir la liste après la suppression
+                } else {
+                    Log.e("API_ERROR", "Échec de la suppression: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Erreur lors de la suppression d'un client: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
 }
+

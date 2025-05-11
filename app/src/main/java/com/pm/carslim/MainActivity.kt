@@ -6,8 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,8 +20,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,6 +33,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,6 +57,7 @@ import com.pm.carslim.factory.ClientDetailViewModelFactory
 import com.pm.carslim.factory.FactureDetailViewModelFactory
 import com.pm.carslim.ui.client.AddClientScreen
 import com.pm.carslim.ui.client.ClientDetailScreen
+import com.pm.carslim.ui.client.EditClientScreen
 import com.pm.carslim.ui.facture.AddFactureScreen
 import com.pm.carslim.ui.facture.FactureDetailScreen
 import com.pm.carslim.ui.theme.CarSlimTheme
@@ -102,9 +109,22 @@ class MainActivity : ComponentActivity() {
                         val clientId = backStackEntry.arguments?.getString("id")?.toInt() ?: -1
                         ClientDetailScreen(clientId,
                             clientDetailViewModel,
+                            clientViewModel,
                             navController,
                             onBackPressed = { navController.popBackStack() })
                     }
+
+                    composable("edit_client/{id}") { backStackEntry ->
+                        val clientId = backStackEntry.arguments?.getString("id")?.toInt() ?: -1
+                       EditClientScreen(clientId,
+                           clientDetailViewModel,
+                            clientViewModel,
+                           onBackPressed = {
+                               clientViewModel.fetchClients() // Rafraîchit la liste des clients
+                               navController.popBackStack() })
+                    }
+
+
 
                     composable("invoice_detail/{invoiceId}") { backStackEntry ->
                         val invoiceId =
@@ -114,11 +134,15 @@ class MainActivity : ComponentActivity() {
                             onBackPressed = { navController.popBackStack() })
                     }
 
+
+
                     composable("add_client") {
-                        AddClientScreen(clientViewModel = clientViewModel, onBackPressed = {
+                        AddClientScreen(
+                            clientViewModel = clientViewModel,
+                            onBackPressed = {
                             clientViewModel.fetchClients() // Rafraîchit la liste des clients
-                            navController.popBackStack()
-                        })
+                            navController.popBackStack() }
+                        )
                     }
 
                     composable("add_invoice") {
@@ -208,13 +232,21 @@ fun ClientItem(client: Client, onClick: () -> Unit) {
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "${client.nom} ${client.prenom}", style = MaterialTheme.typography.titleLarge
-            )
-            client.telephone?.let { Text(text = "📞 $it") }
-            client.mel?.let { Text(text = "✉️ $it") }
-            client.ville?.let { Text(text = "📍 $it") }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "${client.nom} ${client.prenom}",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                client.telephone?.let { Text(text = "📞 $it") }
+                client.mel?.let { Text(text = "✉️ $it") }
+                client.ville?.let { Text(text = "📍 $it") }
+            }
+
+
         }
     }
 }
