@@ -60,12 +60,14 @@ import com.pm.carslim.ui.client.ClientDetailScreen
 import com.pm.carslim.ui.client.EditClientScreen
 import com.pm.carslim.ui.facture.AddFactureScreen
 import com.pm.carslim.ui.facture.FactureDetailScreen
+import com.pm.carslim.ui.reparation.AddReparationScreen
 import com.pm.carslim.ui.theme.CarSlimTheme
 import com.pm.carslim.ui.voiture.AddVoitureScreen
 import com.pm.carslim.viewmodels.ClientDetailViewModel
 import com.pm.carslim.viewmodels.ClientViewModel
 import com.pm.carslim.viewmodels.FactureDetailViewModel
 import com.pm.carslim.viewmodels.FactureViewModel
+import com.pm.carslim.viewmodels.ReparationViewModel
 import com.pm.carslim.viewmodels.VoitureViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -80,6 +82,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private val factureViewModel: FactureViewModel by viewModels()
+
+    private val reparationViewModel: ReparationViewModel by viewModels()
 
     private val voitureViewModel: VoitureViewModel by viewModels()
 
@@ -149,13 +153,21 @@ class MainActivity : ComponentActivity() {
                         AddFactureScreen(factureViewModel = factureViewModel,
                             onBackPressed = { navController.popBackStack() })
                     }
+
                     composable("add_car") {
                         AddVoitureScreen(viewModel = clientViewModel,
                             voitureViewModel = voitureViewModel,
                             onBackPressed = { navController.popBackStack() })
-
-
                     }
+
+                    composable("add_repair") {
+                        AddReparationScreen(
+                            reparationViewModel = reparationViewModel,
+                            onBackPressed = { navController.popBackStack() })
+                    }
+
+
+
                 }
             }
         }

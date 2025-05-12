@@ -4,6 +4,7 @@ package com.pm.carslim.data.remote
 import com.pm.carslim.data.models.Client
 import com.pm.carslim.data.models.Facture
 import com.pm.carslim.data.models.FactureComplete
+import com.pm.carslim.data.models.Reparation
 import com.pm.carslim.data.models.Voiture
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -51,4 +52,11 @@ interface ApiService {
 
     @POST("voitures")
     suspend fun addVoiture(@Body voiture: Voiture): Response<ResponseBody>
+
+    @GET("reparations")
+    suspend fun getReparation(): List<Reparation>
+
+    @POST("reparations")
+    suspend fun addReparation(@Body reparation: Reparation): Response<ResponseBody>
+
 }

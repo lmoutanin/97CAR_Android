@@ -119,80 +119,87 @@ fun ClientDetailScreen(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 // En-tête avec le nom et le menu
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
+
                                     Text(
                                         text = "${clientData.nom} ${clientData.prenom}",
                                         style = MaterialTheme.typography.headlineMedium
                                     )
 
-                                    // Menu
-                                    var expanded by remember { mutableStateOf(false) }
-                                    Box {
-                                        IconButton(onClick = { expanded = true }) {
-                                            Icon(
-                                                Icons.Default.MoreVert,
-                                                contentDescription = "Options"
-                                            )
-                                        }
-                                        DropdownMenu(
-                                            expanded = expanded,
-                                            onDismissRequest = { expanded = false }
-                                        ) {
-                                            DropdownMenuItem(
-                                                text = { Text("Edit") },
-                                                onClick = {
-                                                    expanded = false
-                                                    navController.navigate("edit_client/${clientData.id_client}")
-                                                          },
-                                                leadingIcon = {
-                                                    Icon(Icons.Outlined.Edit, contentDescription = null)
-                                                }
-                                            )
-                                            DropdownMenuItem(
-                                                text = { Text("Delete") },
-                                                onClick = {
-                                                    val ttv = client!!.id_client.toString()
-                                                 clientViewModel.deleteClient(ttv)
-                                                    expanded = false
-                                                    showSuccessMessage = true
-                                                    message = "Client supprimer avec succès"
-                                                    onBackPressed()
-                                                          },
 
-                                                leadingIcon = {
-                                                    Icon(Icons.Outlined.Delete, contentDescription = null)
-                                                }
-                                            )
 
-                                        }
-                                    }
-                                }
 
                                 HorizontalDivider()
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column {
+                                    // Informations du client
+                                    clientData.telephone?.let { telephone ->
+                                        Text(text = "📞 Téléphone: $telephone")
+                                    }
 
-                                // Informations du client
-                                clientData.telephone?.let { telephone ->
-                                    Text(text = "📞 Téléphone: $telephone")
+                                    clientData.mel?.let { email ->
+                                        Text(text = "✉️ Email: $email")
+                                    }
+
+                                    clientData.adresse?.let { adresse ->
+                                        Text(text = "🏠 Adresse: $adresse")
+                                    }
+
+                                    clientData.code_postal?.let { codePostal ->
+                                        Text(text = "📪 Code Postal: $codePostal")
+                                    }
+
+                                    clientData.ville?.let { ville ->
+                                        Text(text = "📍 Ville: $ville")
+                                    }
                                 }
+                                    Column {
+                                        // Menu
+                                        var expanded by remember { mutableStateOf(false) }
+                                        Box {
+                                            IconButton(onClick = { expanded = true }) {
+                                                Icon(
+                                                    Icons.Default.MoreVert,
+                                                    contentDescription = "Options"
+                                                )
+                                            }
+                                            DropdownMenu(
+                                                expanded = expanded,
+                                                onDismissRequest = { expanded = false }
+                                            ) {
+                                                DropdownMenuItem(
+                                                    text = { Text("Edit") },
+                                                    onClick = {
+                                                        expanded = false
+                                                        navController.navigate("edit_client/${clientData.id_client}")
+                                                    },
+                                                    leadingIcon = {
+                                                        Icon(Icons.Outlined.Edit, contentDescription = null)
+                                                    }
+                                                )
+                                                DropdownMenuItem(
+                                                    text = { Text("Delete") },
+                                                    onClick = {
+                                                        val ttv = client!!.id_client.toString()
+                                                        clientViewModel.deleteClient(ttv)
+                                                        expanded = false
+                                                        showSuccessMessage = true
+                                                        message = "Client supprimer avec succès"
+                                                        onBackPressed()
+                                                    },
 
-                                clientData.mel?.let { email ->
-                                    Text(text = "✉️ Email: $email")
-                                }
+                                                    leadingIcon = {
+                                                        Icon(Icons.Outlined.Delete, contentDescription = null)
+                                                    }
+                                                )
 
-                                clientData.adresse?.let { adresse ->
-                                    Text(text = "🏠 Adresse: $adresse")
-                                }
+                                            }
+                                        }
+                                    }
 
-                                clientData.code_postal?.let { codePostal ->
-                                    Text(text = "📪 Code Postal: $codePostal")
-                                }
-
-                                clientData.ville?.let { ville ->
-                                    Text(text = "📍 Ville: $ville")
                                 }
                             }
                         }
@@ -225,10 +232,14 @@ fun ClientDetailScreen(
                                         },
                                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                                 ) {
-
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ){
                                     Column(
                                         modifier = Modifier
-                                            .fillMaxWidth()
+
                                             .padding(16.dp),
                                         verticalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
@@ -252,6 +263,52 @@ fun ClientDetailScreen(
                                             text = "Kilometrage: ${voiture.kilometrage} €",
                                             style = MaterialTheme.typography.bodyMedium
                                         )
+                                    }
+                                        Column (
+                                            modifier = Modifier
+                                            .padding(16.dp),){
+                                            // Menu
+                                            var expanded by remember { mutableStateOf(false) }
+                                            Box {
+                                                IconButton(onClick = { expanded = true }) {
+                                                    Icon(
+                                                        Icons.Default.MoreVert,
+                                                        contentDescription = "Options"
+                                                    )
+                                                }
+                                                DropdownMenu(
+                                                    expanded = expanded,
+                                                    onDismissRequest = { expanded = false }
+                                                ) {
+                                                    DropdownMenuItem(
+                                                        text = { Text("Edit") },
+                                                        onClick = {
+                                                            expanded = false
+                                                            navController.navigate("edit_client/${clientData.id_client}")
+                                                        },
+                                                        leadingIcon = {
+                                                            Icon(Icons.Outlined.Edit, contentDescription = null)
+                                                        }
+                                                    )
+                                                    DropdownMenuItem(
+                                                        text = { Text("Delete") },
+                                                        onClick = {
+                                                            val ttv = client!!.id_client.toString()
+                                                            clientViewModel.deleteClient(ttv)
+                                                            expanded = false
+                                                            showSuccessMessage = true
+                                                            message = "Client supprimer avec succès"
+                                                            onBackPressed()
+                                                        },
+
+                                                        leadingIcon = {
+                                                            Icon(Icons.Outlined.Delete, contentDescription = null)
+                                                        }
+                                                    )
+
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }

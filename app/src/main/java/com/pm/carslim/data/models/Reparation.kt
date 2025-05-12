@@ -1,8 +1,8 @@
 package com.pm.carslim.data.models
 
 data class Reparation(
-    val id: Int,
+    val id: Int? = null,
     val description: String,
     val cout: String,
-    val quantite: Int
+    val quantite: Int? = null
 )
