@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pm.carslim.data.models.Client
 import com.pm.carslim.data.remote.RetrofitInstance
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 open class ClientViewModel : ViewModel() {
     // Liste des clients
@@ -20,6 +22,11 @@ open class ClientViewModel : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
     open val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _message = MutableStateFlow("")
+    val message: StateFlow<String> = _message
+
+
 
     init {
         fetchClients()
@@ -45,17 +52,24 @@ open class ClientViewModel : ViewModel() {
         _selectedClient.value = client
     }
 
-    open fun addClient(client: Client) {
+   fun addClient(client: Client )  {
+
         viewModelScope.launch {
-            try {
-                RetrofitInstance.api.addClient(client)
-                Log.d("API", "ajout d'un client")
-                fetchClients() // Rafraîchir la liste après ajout
+           try {
+               val response =  RetrofitInstance.api.addClient(client)
+               val message = JSONObject(response.body()?.string() ?: "").getString("message")
+               _message.value =  message
+               Log.d("API", "ajout d'un client")
+               fetchClients() // Rafraîchir la liste après ajout
+
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Erreur lors de l'ajout d'un client: ${e.message}")
+               Log.e("API_ERROR", "Erreur lors de l'ajout d'un client: ${e.message}").toString()
                 e.printStackTrace()
+               _message.value =  "Erreur lors de l'ajout  d'un client"
             }
+
         }
+
     }
 
     open fun editClient(client: Client) {
@@ -67,6 +81,7 @@ open class ClientViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Erreur lors de  la modification d'un client: ${e.message}")
                 e.printStackTrace()
+
             }
         }
     }

@@ -37,12 +37,13 @@ import com.pm.carslim.data.models.Voiture
 import com.pm.carslim.ui.theme.CarSlimTheme
 import com.pm.carslim.viewmodels.ClientViewModel
 import com.pm.carslim.viewmodels.VoitureViewModel
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddVoitureScreen(
-    viewModel: ClientViewModel, voitureViewModel: VoitureViewModel, onBackPressed: () -> Unit
+    clientViewModel: ClientViewModel, voitureViewModel: VoitureViewModel, onBackPressed: () -> Unit
 ) {
     var annee by remember { mutableStateOf("") }
     var marque by remember { mutableStateOf("") }
@@ -53,18 +54,14 @@ fun AddVoitureScreen(
 
 
     var expanded by remember { mutableStateOf(false) }
-    val clients by viewModel.clients.collectAsState()
+    val clients by clientViewModel.clients.collectAsState()
     var nomClient: String = ""
 
+    val message by voitureViewModel.message.collectAsState()
     var showSuccessMessage by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffect(showSuccessMessage) {
-        if (showSuccessMessage) {
-            Toast.makeText(context, "Voiture ajouté avec succès", Toast.LENGTH_SHORT).show()
-            showSuccessMessage = false
-        }
-    }
+
 
     Scaffold(topBar = {
         TopAppBar(modifier = Modifier
@@ -172,10 +169,18 @@ fun AddVoitureScreen(
 
                             voitureViewModel.addVoiture(voiture)
                             showSuccessMessage = true
-                            onBackPressed()
+
                         }, shape = RoundedCornerShape(2.dp)
                     ) {
                         Text("Ajouter")
+                        LaunchedEffect(showSuccessMessage) {
+                            if (showSuccessMessage) {
+                                delay(200)
+                                Toast.makeText(context, message+" "+marque+" "+modele, Toast.LENGTH_SHORT).show()
+                                onBackPressed()
+                                showSuccessMessage = false
+                            }
+                        }
                     }
                 }
             }
@@ -188,7 +193,7 @@ fun AddVoitureScreen(
 fun PreviewAddVoitureScreen() {
 
     CarSlimTheme {
-        AddVoitureScreen(viewModel = ClientViewModel(),
+        AddVoitureScreen(clientViewModel = ClientViewModel(),
             voitureViewModel = VoitureViewModel(),
             onBackPressed = {})
     }

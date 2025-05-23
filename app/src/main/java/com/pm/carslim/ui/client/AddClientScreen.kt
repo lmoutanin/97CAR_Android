@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.pm.carslim.data.models.Client
 import com.pm.carslim.ui.theme.CarSlimTheme
 import com.pm.carslim.viewmodels.ClientViewModel
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,15 +46,12 @@ fun AddClientScreen(
     var codePostal by remember { mutableStateOf("") }
     var ville by remember { mutableStateOf("") }
 
+    val message by clientViewModel.message.collectAsState()
+
     var showSuccessMessage by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffect(showSuccessMessage) {
-        if (showSuccessMessage) {
-            Toast.makeText(context, "Client ajouté avec succès", Toast.LENGTH_SHORT).show()
-            showSuccessMessage = false
-        }
-    }
+
 
     Scaffold(topBar = {
         TopAppBar(modifier = Modifier
@@ -118,13 +117,22 @@ fun AddClientScreen(
                                 ville = ville.takeIf { it.isNotEmpty() })
                             clientViewModel.addClient(client)
                             showSuccessMessage = true
-                            onBackPressed()
+
+
                         },
                         modifier = Modifier.padding(top = 16.dp),
                         shape = RoundedCornerShape(2.dp)
 
                     ) {
                         Text("Ajouter")
+                        LaunchedEffect(showSuccessMessage) {
+                            if (showSuccessMessage) {
+                                delay(200)
+                                Toast.makeText(context,  message+" "+nom+" "+prenom, Toast.LENGTH_SHORT).show()
+                                showSuccessMessage = false
+                                onBackPressed()
+                            }
+                        }
                     }
                 }
             }
@@ -136,9 +144,7 @@ fun AddClientScreen(
 @Composable
 fun PreviewAddClientScreen() {
     val fakeViewModel = object : ClientViewModel() {
-        override fun addClient(client: Client) {
-            Log.d("FakeViewModel", "Client ajouté: $client")
-        }
+
     }
 
     CarSlimTheme {
