@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("add_car") {
-                        AddVoitureScreen(clientViewModel = clientViewModel,
+                        AddVoitureScreen(
                             voitureViewModel = voitureViewModel,
                             onBackPressed = { navController.popBackStack() })
                     }

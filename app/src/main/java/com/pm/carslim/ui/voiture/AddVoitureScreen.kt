@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pm.carslim.data.models.Voiture
 import com.pm.carslim.ui.theme.CarSlimTheme
-import com.pm.carslim.viewmodels.ClientViewModel
 import com.pm.carslim.viewmodels.VoitureViewModel
 import kotlinx.coroutines.delay
 
@@ -43,7 +42,7 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddVoitureScreen(
-    clientViewModel: ClientViewModel, voitureViewModel: VoitureViewModel, onBackPressed: () -> Unit
+    voitureViewModel: VoitureViewModel, onBackPressed: () -> Unit
 ) {
     var annee by remember { mutableStateOf("") }
     var marque by remember { mutableStateOf("") }
@@ -54,10 +53,10 @@ fun AddVoitureScreen(
 
 
     var expanded by remember { mutableStateOf(false) }
-    val clients by clientViewModel.clients.collectAsState()
-    var nomClient: String = ""
+    val clients by voitureViewModel.clients.collectAsState()
+    var nomClient: String = ""  // Pour selectionner un client
 
-    val message by voitureViewModel.message.collectAsState()
+    val message by voitureViewModel.message.collectAsState() // Pour message retourne par addVoiture
     var showSuccessMessage by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -89,7 +88,7 @@ fun AddVoitureScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                // ADD CLIENT
+                // La liste déroulante permet de sélectionner un client.
                 OutlinedButton(
                     onClick = { expanded = true },
                     modifier = Modifier
@@ -167,16 +166,22 @@ fun AddVoitureScreen(
                                 client_id = client_id
                             )
 
-                            voitureViewModel.addVoiture(voiture)
+                            voitureViewModel.addVoiture(voiture) // Add une voiture
                             showSuccessMessage = true
 
                         }, shape = RoundedCornerShape(2.dp)
                     ) {
                         Text("Ajouter")
+
+                        // Affiche un message  et retourne a la page precedente
                         LaunchedEffect(showSuccessMessage) {
                             if (showSuccessMessage) {
-                                delay(200)
-                                Toast.makeText(context, message+" "+marque+" "+modele, Toast.LENGTH_SHORT).show()
+                                delay(500) // Un delai avant affiche le message et de retourne a l'accueil
+                                Toast.makeText(
+                                    context,
+                                    message + " " + marque + " " + modele,
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 onBackPressed()
                                 showSuccessMessage = false
                             }
@@ -191,10 +196,7 @@ fun AddVoitureScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewAddVoitureScreen() {
-
     CarSlimTheme {
-        AddVoitureScreen(clientViewModel = ClientViewModel(),
-            voitureViewModel = VoitureViewModel(),
-            onBackPressed = {})
+        AddVoitureScreen(voitureViewModel = VoitureViewModel(), onBackPressed = {})
     }
 }

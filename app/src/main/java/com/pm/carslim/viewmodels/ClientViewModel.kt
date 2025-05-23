@@ -6,16 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pm.carslim.data.models.Client
 import com.pm.carslim.data.remote.RetrofitInstance
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
 import org.json.JSONObject
 
 open class ClientViewModel : ViewModel() {
-    // Liste des clients
+
     private val _clients = MutableStateFlow<List<Client>>(emptyList())
-    open val clients: StateFlow<List<Client>> = _clients
+    open val clients: StateFlow<List<Client>> = _clients  // Liste des clients
 
     // Client sélectionné
     private val _selectedClient = MutableStateFlow<Client?>(null)
@@ -24,14 +24,14 @@ open class ClientViewModel : ViewModel() {
     open val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _message = MutableStateFlow("")
-    val message: StateFlow<String> = _message
-
+    val message: StateFlow<String> = _message // Message
 
 
     init {
         fetchClients()
     }
 
+    // Methode pour obtenir tout les clients
     fun fetchClients() {
         viewModelScope.launch {
             try {
@@ -52,33 +52,32 @@ open class ClientViewModel : ViewModel() {
         _selectedClient.value = client
     }
 
-   fun addClient(client: Client )  {
-
+    //Methode pour ajout un client
+    fun addClient(client: Client) {
         viewModelScope.launch {
-           try {
-               val response =  RetrofitInstance.api.addClient(client)
-               val message = JSONObject(response.body()?.string() ?: "").getString("message")
-               _message.value =  message
-               Log.d("API", "ajout d'un client")
-               fetchClients() // Rafraîchir la liste après ajout
+            try {
+                addMessage(RetrofitInstance.api.addClient(client))
+                Log.d("API", "ajout d'un client")
+                fetchClients() // Rafraîchir la liste après ajout
 
             } catch (e: Exception) {
-               Log.e("API_ERROR", "Erreur lors de l'ajout d'un client: ${e.message}").toString()
+                addMessage()
+                Log.e("API_ERROR", "Erreur lors de l'ajout d'un client: ${e.message}").toString()
                 e.printStackTrace()
-               _message.value =  "Erreur lors de l'ajout  d'un client"
             }
-
         }
-
     }
 
+
+    //Methode pour modifier un client
     open fun editClient(client: Client) {
         viewModelScope.launch {
             try {
-                RetrofitInstance.api.editClient(client.id_client.toString(),client)
+                addMessage(RetrofitInstance.api.editClient(client.id_client.toString(), client))
                 Log.d("API", "modification un client")
                 fetchClients() // Rafraîchir la liste après la modification
             } catch (e: Exception) {
+                addMessage()
                 Log.e("API_ERROR", "Erreur lors de  la modification d'un client: ${e.message}")
                 e.printStackTrace()
 
@@ -86,6 +85,7 @@ open class ClientViewModel : ViewModel() {
         }
     }
 
+    // Methode pour supprimer  un client
     open fun deleteClient(idClient: String) {
         viewModelScope.launch {
             try {
@@ -102,5 +102,15 @@ open class ClientViewModel : ViewModel() {
             }
         }
     }
+
+    // Methode pour  message
+    fun addMessage(response: retrofit2.Response<ResponseBody>? = null) {
+        var message = ""
+        if (response != null) message =
+            JSONObject(response.body()?.string() ?: "").getString("message") else message = "ERREUR"
+        _message.value = message
+    }
+
+
 }
 

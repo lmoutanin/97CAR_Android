@@ -1,6 +1,5 @@
 package com.pm.carslim.ui.client
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,12 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pm.carslim.data.models.Client
-import com.pm.carslim.ui.theme.CarSlimTheme
 import com.pm.carslim.viewmodels.ClientDetailViewModel
 import com.pm.carslim.viewmodels.ClientViewModel
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,15 +58,11 @@ fun EditClientScreen(
     var codePostal by remember { mutableStateOf(client?.code_postal) }
     var ville by remember { mutableStateOf(client?.ville) }
 
+    val message by clientViewModel.message.collectAsState()
     var showSuccessMessage by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffect(showSuccessMessage) {
-        if (showSuccessMessage) {
-            Toast.makeText(context, "Client modifier avec succès", Toast.LENGTH_SHORT).show()
-            showSuccessMessage = false
-        }
-    }
+
 
     Scaffold(topBar = {
         TopAppBar(modifier = Modifier
@@ -117,46 +111,59 @@ fun EditClientScreen(
                     onValueChange = { ville = it },
                     label = { Text("Ville") })
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(top = 16.dp),
-                        contentAlignment = Alignment.Center
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(top = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(
+                        onClick = {
+                            if (nom == "") nom = client?.nom.toString()
+                            if (prenom == "") prenom = client?.prenom.toString()
+                            if (telephone == "") telephone = client?.telephone.toString()
+                            if (mel == "") mel = client?.mel.toString()
+                            if (adresse == "") adresse = client?.adresse.toString()
+                            if (codePostal == "") codePostal = client?.code_postal.toString()
+                            if (ville == "") ville = client?.ville
+
+                            val editclient = Client(
+                                id_client = client?.id_client,
+                                nom = nom.toString(),
+                                prenom = prenom.toString(),
+                                telephone = telephone,
+                                mel = mel,
+                                adresse = adresse,
+                                code_postal = codePostal,
+                                ville = ville
+                            )
+
+
+                            clientViewModel.editClient(editclient)
+                            showSuccessMessage = true
+
+                        },
+                        modifier = Modifier.padding(top = 16.dp),
+                        shape = RoundedCornerShape(2.dp)
+
                     ) {
-                        Button(
-                            onClick = {
-                                if (nom == "") nom = client?.nom.toString()
-                                if (prenom == "") prenom = client?.prenom.toString()
-                                if(telephone == "") telephone = client?.telephone.toString()
-                                if (mel == "") mel = client?.mel.toString()
-                                if (adresse == "") adresse = client?.adresse.toString()
-                                if (codePostal == "") codePostal = client?.code_postal.toString()
-                                if (ville == "") ville = client?.ville
+                        Text("Modifier")
 
-                                val editclient = Client(
-                                    id_client = client?.id_client,
-                                    nom = nom.toString(),
-                                    prenom = prenom.toString(),
-                                    telephone = telephone  ,
-                                    mel = mel ,
-                                    adresse = adresse ,
-                                    code_postal = codePostal ,
-                                    ville = ville
-                                )
-
-
-                              clientViewModel.editClient(editclient)
-                                showSuccessMessage = true
+                        LaunchedEffect(showSuccessMessage) {
+                            if (showSuccessMessage) {
+                                delay(200)
+                                Toast.makeText(
+                                    context,
+                                    message + " " + nom + " " + prenom,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                showSuccessMessage = false
                                 onBackPressed()
-                            },
-                            modifier = Modifier.padding(top = 16.dp),
-                            shape = RoundedCornerShape(2.dp)
-
-                        ) {
-                            Text("Modifier")
+                            }
                         }
                     }
+                }
 
             }
         }

@@ -67,7 +67,7 @@ fun ClientDetailScreen(
 
     LaunchedEffect(showSuccessMessage) {
         if (showSuccessMessage) {
-            Toast.makeText(context,  message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             showSuccessMessage = false
         }
     }
@@ -75,26 +75,19 @@ fun ClientDetailScreen(
     val client by clientDetailViewModel.client.collectAsState()
     val voitures by clientDetailViewModel.voitures.collectAsState()
     val factures by clientDetailViewModel.factures.collectAsState()
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                modifier = Modifier.fillMaxWidth(),
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Détails du client")
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    Scaffold(topBar = {
+        TopAppBar(modifier = Modifier.fillMaxWidth(), title = {
+            Box(
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+            ) {
+                Text("Détails du client")
+            }
+        }, navigationIcon = {
+            IconButton(onClick = onBackPressed) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+            }
+        })
+    }) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -120,10 +113,10 @@ fun ClientDetailScreen(
                             ) {
                                 // En-tête avec le nom et le menu
 
-                                    Text(
-                                        text = "${clientData.nom} ${clientData.prenom}",
-                                        style = MaterialTheme.typography.headlineMedium
-                                    )
+                                Text(
+                                    text = "${clientData.nom} ${clientData.prenom}",
+                                    style = MaterialTheme.typography.headlineMedium
+                                )
 
 
 
@@ -135,27 +128,27 @@ fun ClientDetailScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column {
-                                    // Informations du client
-                                    clientData.telephone?.let { telephone ->
-                                        Text(text = "📞 Téléphone: $telephone")
-                                    }
+                                        // Informations du client
+                                        clientData.telephone?.let { telephone ->
+                                            Text(text = "📞 Téléphone: $telephone")
+                                        }
 
-                                    clientData.mel?.let { email ->
-                                        Text(text = "✉️ Email: $email")
-                                    }
+                                        clientData.mel?.let { email ->
+                                            Text(text = "✉️ Email: $email")
+                                        }
 
-                                    clientData.adresse?.let { adresse ->
-                                        Text(text = "🏠 Adresse: $adresse")
-                                    }
+                                        clientData.adresse?.let { adresse ->
+                                            Text(text = "🏠 Adresse: $adresse")
+                                        }
 
-                                    clientData.code_postal?.let { codePostal ->
-                                        Text(text = "📪 Code Postal: $codePostal")
-                                    }
+                                        clientData.code_postal?.let { codePostal ->
+                                            Text(text = "📪 Code Postal: $codePostal")
+                                        }
 
-                                    clientData.ville?.let { ville ->
-                                        Text(text = "📍 Ville: $ville")
+                                        clientData.ville?.let { ville ->
+                                            Text(text = "📍 Ville: $ville")
+                                        }
                                     }
-                                }
                                     Column {
                                         // Menu
                                         var expanded by remember { mutableStateOf(false) }
@@ -166,22 +159,20 @@ fun ClientDetailScreen(
                                                     contentDescription = "Options"
                                                 )
                                             }
-                                            DropdownMenu(
-                                                expanded = expanded,
-                                                onDismissRequest = { expanded = false }
-                                            ) {
-                                                DropdownMenuItem(
-                                                    text = { Text("Edit") },
+                                            DropdownMenu(expanded = expanded,
+                                                onDismissRequest = { expanded = false }) {
+                                                DropdownMenuItem(text = { Text("Edit") },
                                                     onClick = {
                                                         expanded = false
                                                         navController.navigate("edit_client/${clientData.id_client}")
                                                     },
                                                     leadingIcon = {
-                                                        Icon(Icons.Outlined.Edit, contentDescription = null)
-                                                    }
-                                                )
-                                                DropdownMenuItem(
-                                                    text = { Text("Delete") },
+                                                        Icon(
+                                                            Icons.Outlined.Edit,
+                                                            contentDescription = null
+                                                        )
+                                                    })
+                                                DropdownMenuItem(text = { Text("Delete") },
                                                     onClick = {
                                                         val ttv = client!!.id_client.toString()
                                                         clientViewModel.deleteClient(ttv)
@@ -192,9 +183,11 @@ fun ClientDetailScreen(
                                                     },
 
                                                     leadingIcon = {
-                                                        Icon(Icons.Outlined.Delete, contentDescription = null)
-                                                    }
-                                                )
+                                                        Icon(
+                                                            Icons.Outlined.Delete,
+                                                            contentDescription = null
+                                                        )
+                                                    })
 
                                             }
                                         }
@@ -236,37 +229,37 @@ fun ClientDetailScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
-                                    ){
-                                    Column(
-                                        modifier = Modifier
-
-                                            .padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Text(
-                                            text = "Marque :${voiture.marque}",
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                        Text(
-                                            text = "Modele : ${voiture.modele}",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        Text(
-                                            text = "Année : ${voiture.annee} €",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        Text(
-                                            text = "Immatriculation : ${voiture.immatriculation} €",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        Text(
-                                            text = "Kilometrage: ${voiture.kilometrage} €",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                    }
-                                        Column (
+                                        Column(
                                             modifier = Modifier
-                                            .padding(16.dp),){
+
+                                                .padding(16.dp),
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Text(
+                                                text = "Marque :${voiture.marque}",
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                            Text(
+                                                text = "Modele : ${voiture.modele}",
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                            Text(
+                                                text = "Année : ${voiture.annee} ",
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                            Text(
+                                                text = "Immatriculation : ${voiture.immatriculation} ",
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                            Text(
+                                                text = "Kilometrage: ${voiture.kilometrage} ",
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                        }
+                                        Column(
+                                            modifier = Modifier.padding(16.dp),
+                                        ) {
                                             // Menu
                                             var expanded by remember { mutableStateOf(false) }
                                             Box {
@@ -276,22 +269,20 @@ fun ClientDetailScreen(
                                                         contentDescription = "Options"
                                                     )
                                                 }
-                                                DropdownMenu(
-                                                    expanded = expanded,
-                                                    onDismissRequest = { expanded = false }
-                                                ) {
-                                                    DropdownMenuItem(
-                                                        text = { Text("Edit") },
+                                                DropdownMenu(expanded = expanded,
+                                                    onDismissRequest = { expanded = false }) {
+                                                    DropdownMenuItem(text = { Text("Edit") },
                                                         onClick = {
                                                             expanded = false
                                                             navController.navigate("edit_client/${clientData.id_client}")
                                                         },
                                                         leadingIcon = {
-                                                            Icon(Icons.Outlined.Edit, contentDescription = null)
-                                                        }
-                                                    )
-                                                    DropdownMenuItem(
-                                                        text = { Text("Delete") },
+                                                            Icon(
+                                                                Icons.Outlined.Edit,
+                                                                contentDescription = null
+                                                            )
+                                                        })
+                                                    DropdownMenuItem(text = { Text("Delete") },
                                                         onClick = {
                                                             val ttv = client!!.id_client.toString()
                                                             clientViewModel.deleteClient(ttv)
@@ -302,9 +293,11 @@ fun ClientDetailScreen(
                                                         },
 
                                                         leadingIcon = {
-                                                            Icon(Icons.Outlined.Delete, contentDescription = null)
-                                                        }
-                                                    )
+                                                            Icon(
+                                                                Icons.Outlined.Delete,
+                                                                contentDescription = null
+                                                            )
+                                                        })
 
                                                 }
                                             }

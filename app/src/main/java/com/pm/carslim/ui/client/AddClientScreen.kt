@@ -1,6 +1,5 @@
 package com.pm.carslim.ui.client
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -128,7 +127,11 @@ fun AddClientScreen(
                         LaunchedEffect(showSuccessMessage) {
                             if (showSuccessMessage) {
                                 delay(200)
-                                Toast.makeText(context,  message+" "+nom+" "+prenom, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    message + " " + nom + " " + prenom,
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 showSuccessMessage = false
                                 onBackPressed()
                             }
