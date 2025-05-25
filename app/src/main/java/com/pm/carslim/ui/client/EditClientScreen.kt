@@ -27,28 +27,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.pm.carslim.data.models.Client
 import com.pm.carslim.viewmodels.ClientDetailViewModel
-import com.pm.carslim.viewmodels.ClientViewModel
+
 import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditClientScreen(
-    clientId: Int,
-    clientDetailViewModel: ClientDetailViewModel,
-    clientViewModel: ClientViewModel,
-    onBackPressed: () -> Unit
+    clientId: Int, clientDetailViewModel: ClientDetailViewModel, onBackPressed: () -> Unit
 ) {
-
 
     // Charge le client avec l'ID récupéré via les arguments
     LaunchedEffect(clientId) {
         clientDetailViewModel.loadClient(clientId)
     }
 
-
     val client by clientDetailViewModel.client.collectAsState()
-
 
     var nom by remember { mutableStateOf(client?.nom) }
     var prenom by remember { mutableStateOf(client?.prenom) }
@@ -58,7 +52,7 @@ fun EditClientScreen(
     var codePostal by remember { mutableStateOf(client?.code_postal) }
     var ville by remember { mutableStateOf(client?.ville) }
 
-    val message by clientViewModel.message.collectAsState()
+    val message by clientDetailViewModel.message.collectAsState()
     var showSuccessMessage by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -120,14 +114,16 @@ fun EditClientScreen(
                 ) {
                     Button(
                         onClick = {
-                            if (nom == "") nom = client?.nom.toString()
-                            if (prenom == "") prenom = client?.prenom.toString()
-                            if (telephone == "") telephone = client?.telephone.toString()
-                            if (mel == "") mel = client?.mel.toString()
-                            if (adresse == "") adresse = client?.adresse.toString()
-                            if (codePostal == "") codePostal = client?.code_postal.toString()
+                            // Verifier que les variables ne sont pas  vide .
+                            if (nom == "") nom = client?.nom
+                            if (prenom == "") prenom = client?.prenom
+                            if (telephone == "") telephone = client?.telephone
+                            if (mel == "") mel = client?.mel
+                            if (adresse == "") adresse = client?.adresse
+                            if (codePostal == "") codePostal = client?.code_postal
                             if (ville == "") ville = client?.ville
 
+                            // Instancie  object client
                             val editclient = Client(
                                 id_client = client?.id_client,
                                 nom = nom.toString(),
@@ -138,33 +134,28 @@ fun EditClientScreen(
                                 code_postal = codePostal,
                                 ville = ville
                             )
-
-
-                            clientViewModel.editClient(editclient)
+                            // Appel de la methode editClient() pour modifier le client
+                            clientDetailViewModel.editClient(editclient)
                             showSuccessMessage = true
-
                         },
-                        modifier = Modifier.padding(top = 16.dp),
-                        shape = RoundedCornerShape(2.dp)
+
+                        modifier = Modifier.padding(top = 16.dp), shape = RoundedCornerShape(2.dp)
 
                     ) {
                         Text("Modifier")
-
                         LaunchedEffect(showSuccessMessage) {
                             if (showSuccessMessage) {
-                                delay(200)
+                                delay(500)
                                 Toast.makeText(
-                                    context,
-                                    message + " " + nom + " " + prenom,
-                                    Toast.LENGTH_SHORT
+                                    context, message + " " + nom + " " + prenom, Toast.LENGTH_SHORT
                                 ).show()
                                 showSuccessMessage = false
                                 onBackPressed()
                             }
                         }
+
                     }
                 }
-
             }
         }
     }

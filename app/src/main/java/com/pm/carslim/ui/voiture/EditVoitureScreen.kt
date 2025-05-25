@@ -31,35 +31,42 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pm.carslim.data.models.Voiture
-import com.pm.carslim.ui.theme.CarSlimTheme
-import com.pm.carslim.viewmodels.VoitureViewModel
+import com.pm.carslim.viewmodels.VoitureDetailViewModel
 import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddVoitureScreen(
-    voitureViewModel: VoitureViewModel, onBackPressed: () -> Unit
+fun EditVoitureScreen(
+    voitureId: Int, voitureDetailViewModel: VoitureDetailViewModel, onBackPressed: () -> Unit
 ) {
-    var annee by remember { mutableStateOf("") }
-    var marque by remember { mutableStateOf("") }
-    var modele by remember { mutableStateOf("") }
-    var immatriculation by remember { mutableStateOf("") }
-    var kilometrage by remember { mutableStateOf("") }
-    var client_id by remember { mutableStateOf("") }
 
-    var nomClient: String = ""  // Pour sauvegarde un client
+    // Charge la voiture avec l'ID récupéré via les arguments
+    LaunchedEffect(voitureId) {
+        voitureDetailViewModel.loadVoitureDetail(voitureId)
+    }
 
-    var expanded by remember { mutableStateOf(false) }
-    val clients by voitureViewModel.clients.collectAsState()
+    val voiture by voitureDetailViewModel.voitureDetail.collectAsState()
+    val clients by voitureDetailViewModel.clients.collectAsState()
 
-    val message by voitureViewModel.message.collectAsState() // Pour message retourne par addVoiture
+    var marque by remember { mutableStateOf(voiture?.marque) }
+    var modele by remember { mutableStateOf(voiture?.modele) }
+    var annee by remember { mutableStateOf(voiture?.annee) }
+    var immatriculation by remember { mutableStateOf(voiture?.immatriculation) }
+    var kilometrage by remember { mutableStateOf(voiture?.kilometrage) }
+
+    var id_client by remember { mutableStateOf(voiture?.client?.id_client) }
+    var nom by remember { mutableStateOf(voiture?.client?.nom) }
+    var prenom by remember { mutableStateOf(voiture?.client?.prenom) }
+
+    val message by voitureDetailViewModel.message.collectAsState()
     var showSuccessMessage by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
 
+    var nomClient: String = nom + " " + prenom  // Pour sauvegarde affichage pour  un client
 
     Scaffold(topBar = {
         TopAppBar(modifier = Modifier
@@ -69,7 +76,7 @@ fun AddVoitureScreen(
                 Box(
                     modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
                 ) {
-                    Text("Ajout d'une voiture")
+                    Text("Edit d'une voiture")
                 }
             })
     }) { padding ->
@@ -86,21 +93,20 @@ fun AddVoitureScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
+
                 // La liste déroulante permet de sélectionner un client.
                 OutlinedButton(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp), onClick = {
+                        .fillMaxHeight(0.09f)
+                        .fillMaxWidth(0.74f), onClick = {
                         expanded = true
-                        voitureViewModel.fetchClients()
+                        voitureDetailViewModel.fetchClients()
                     },
-
 
                     shape = RoundedCornerShape(2.dp)
                 ) {
                     Text(
-                        text = if (client_id.isEmpty()) "Sélectionner un client" else nomClient,
-                        modifier = Modifier.fillMaxWidth(),
+                        text = nomClient, modifier = Modifier.fillMaxWidth()
                     )
 
                 }
@@ -116,7 +122,7 @@ fun AddVoitureScreen(
                                 textAlign = TextAlign.Center
                             )
                         }, onClick = {
-                            client_id = client.id_client.toString()
+                            id_client = client.id_client
                             nomClient = "${client.nom} ${client.prenom}"
                             expanded = false
                         })
@@ -125,81 +131,73 @@ fun AddVoitureScreen(
 
                 // FIN ADD CLIENT
 
-
-                OutlinedTextField(value = marque,
+                OutlinedTextField(value = marque.toString(),
                     onValueChange = { marque = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp),
                     label = { Text("Marque") })
-                OutlinedTextField(value = modele,
+                OutlinedTextField(value = modele.toString(),
                     onValueChange = { modele = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp),
                     label = { Text("Modèle") })
-                OutlinedTextField(value = annee,
+                OutlinedTextField(value = annee.toString(),
                     onValueChange = { annee = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp),
                     label = { Text("Année") })
-                OutlinedTextField(value = immatriculation,
+                OutlinedTextField(value = immatriculation.toString(),
                     onValueChange = { immatriculation = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp),
                     label = { Text("Immatriculation") })
-                OutlinedTextField(value = kilometrage,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp),
+                OutlinedTextField(value = kilometrage.toString(),
                     onValueChange = { kilometrage = it },
                     label = { Text("Kilométrage") })
-
 
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
+                        .padding(top = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Button(
                         onClick = {
+                            // Verifier que les variables ne sont pas  vide .
+                            if (id_client.toString() == "") id_client = voiture?.client?.id_client
+                            if (marque == "") marque = voiture?.marque
+                            if (modele == "") modele = voiture?.modele
+                            if (annee == "") annee = voiture?.annee
+                            if (immatriculation == "") immatriculation = voiture?.immatriculation
+                            if (kilometrage == "") kilometrage = voiture?.kilometrage
 
-                            if (annee.isNotEmpty() && marque.isNotEmpty() && modele.isNotEmpty() && immatriculation.isNotEmpty() && kilometrage.isNotEmpty() && client_id.isNotEmpty()) {
 
-                                val voiture = Voiture(
-                                    annee = annee,
-                                    marque = marque,
-                                    modele = modele,
-                                    immatriculation = immatriculation,
-                                    kilometrage = kilometrage,
-                                    client_id = client_id
-                                )
+                            // Instancie  object client
+                            val editVoiture = Voiture(
+                                id_voiture = voiture?.id_voiture,
+                                annee = annee.toString(),
+                                marque = marque.toString(),
+                                modele = modele.toString(),
+                                immatriculation = immatriculation.toString(),
+                                kilometrage = kilometrage.toString(),
+                                client_id = id_client.toString()
+                            )
 
-                                voitureViewModel.addVoiture(voiture) // Add une voiture
-                                showSuccessMessage = true
-                            }
 
-                        }, shape = RoundedCornerShape(2.dp)
+                            // Appel de la methode editVoiture() pour modifier la voiture
+                            voitureDetailViewModel.editVoiture(editVoiture)
+                            showSuccessMessage = true
+                        },
+
+                        modifier = Modifier.padding(top = 16.dp), shape = RoundedCornerShape(2.dp)
+
                     ) {
-                        Text("Ajouter")
-
-                        // Affiche un message  et retourne a la page precedente
+                        Text("Modifier")
                         LaunchedEffect(showSuccessMessage) {
                             if (showSuccessMessage) {
-                                delay(500) // Un delai avant affiche le message et de retourne a l'accueil
+                                delay(500)
                                 Toast.makeText(
-                                    context,
-                                    message + " " + marque + " " + modele,
-                                    Toast.LENGTH_SHORT
+                                    context, message + " " + nom + " " + prenom, Toast.LENGTH_SHORT
                                 ).show()
-                                onBackPressed()
                                 showSuccessMessage = false
+                                onBackPressed()
                             }
                         }
+
                     }
                 }
             }
@@ -207,10 +205,4 @@ fun AddVoitureScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewAddVoitureScreen() {
-    CarSlimTheme {
-        AddVoitureScreen(voitureViewModel = VoitureViewModel(), onBackPressed = {})
-    }
-}
+

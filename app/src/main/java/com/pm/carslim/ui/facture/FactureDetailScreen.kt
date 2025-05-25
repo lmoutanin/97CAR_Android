@@ -35,16 +35,16 @@ import com.pm.carslim.viewmodels.FactureDetailViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FactureDetailScreen(
-    viewModel: FactureDetailViewModel, factureId: Int, onBackPressed: () -> Unit
+    factureDetailViewModel: FactureDetailViewModel, factureId: Int, onBackPressed: () -> Unit
 
 ) {
-    val facture by viewModel.factureDetail.collectAsState()
+    val facture by factureDetailViewModel.factureDetail.collectAsState()
 
     Log.d("FactureScreen", "factureId : $factureId")
 
     // Charge la facture avec l'ID récupéré via les arguments
     LaunchedEffect(factureId) {
-        viewModel.loadFactureDetail(factureId)
+        factureDetailViewModel.loadFactureDetail(factureId)
     }
 
     Scaffold(topBar = {

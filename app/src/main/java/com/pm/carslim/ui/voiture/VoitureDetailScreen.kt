@@ -1,14 +1,14 @@
-package com.pm.carslim.ui.client
-
+package com.pm.carslim.ui.voiture
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -42,21 +42,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.pm.carslim.viewmodels.ClientDetailViewModel
+import com.pm.carslim.viewmodels.VoitureDetailViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClientDetailScreen(
-    clientId: Int,
-    clientDetailViewModel: ClientDetailViewModel,
+fun VoitureDetailScreen(
+    voitureDetailViewModel: VoitureDetailViewModel,
+    voitureId: Int,
     navController: NavController,
     onBackPressed: () -> Unit
-) {
 
-    // Charge le client avec l'ID récupéré via les arguments
-    LaunchedEffect(clientId) {
-        clientDetailViewModel.loadClient(clientId)
-    }
+) {
+    val voiture by voitureDetailViewModel.voitureDetail.collectAsState()
 
     // Affiche un message de suppresion , edit
     var showSuccessMessage by remember { mutableStateOf(false) }
@@ -70,15 +68,19 @@ fun ClientDetailScreen(
         }
     }
 
-    val client by clientDetailViewModel.client.collectAsState()
-    val voitures by clientDetailViewModel.voitures.collectAsState()
-    val factures by clientDetailViewModel.factures.collectAsState()
+    // Charge la facture avec l'ID récupéré via les arguments
+    LaunchedEffect(voitureId) {
+        voitureDetailViewModel.loadVoitureDetail(voitureId)
+    }
 
     Scaffold(topBar = {
-        TopAppBar(modifier = Modifier.fillMaxWidth(), title = {
-            Box {
+        TopAppBar(title = {
+            Box(
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+            ) {
+
                 Text(
-                    text = "Détails du client",
+                    text = "Détails de la voiture",
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(top = 10.dp, end = 25.dp)
@@ -87,7 +89,7 @@ fun ClientDetailScreen(
                 )
             }
         }, navigationIcon = {
-            IconButton(onClick = { navController.navigate("client_list") }) {
+            IconButton(onClick = { navController.navigate("client_detail/${voiture?.client?.id_client}") }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
             }
         })
@@ -97,7 +99,7 @@ fun ClientDetailScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            client?.let { clientData ->
+            voiture?.let { dataVoiture ->
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -118,7 +120,7 @@ fun ClientDetailScreen(
                                 // En-tête avec le nom et le menu
 
                                 Text(
-                                    text = "${clientData.nom} ${clientData.prenom}",
+                                    text = "${dataVoiture.marque} ${dataVoiture.modele}",
                                     style = MaterialTheme.typography.headlineMedium
                                 )
 
@@ -132,26 +134,11 @@ fun ClientDetailScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column {
-                                        // Informations du client
-                                        clientData.telephone?.let { telephone ->
-                                            Text(text = "📞 Téléphone: $telephone")
-                                        }
-
-                                        clientData.mel?.let { email ->
-                                            Text(text = "✉️ Email: $email")
-                                        }
-
-                                        clientData.adresse?.let { adresse ->
-                                            Text(text = "🏠 Adresse: $adresse")
-                                        }
-
-                                        clientData.code_postal?.let { codePostal ->
-                                            Text(text = "📪 Code Postal: $codePostal")
-                                        }
-
-                                        clientData.ville?.let { ville ->
-                                            Text(text = "📍 Ville: $ville")
-                                        }
+                                        // Informations de la voiture
+                                        Text("Propriétaire : ${dataVoiture.client.nom} ${dataVoiture.client.prenom}")
+                                        Text("Année : ${dataVoiture.annee}")
+                                        Text("Modele : ${dataVoiture.immatriculation}")
+                                        Text("Immatriculation : ${dataVoiture.immatriculation}")
                                     }
                                     Column {
                                         // Menu
@@ -168,7 +155,7 @@ fun ClientDetailScreen(
                                                 DropdownMenuItem(text = { Text("Edit") },
                                                     onClick = {
                                                         expanded = false
-                                                        navController.navigate("edit_client/${clientData.id_client}")
+                                                        navController.navigate("edit_car/${dataVoiture.id_voiture}")
                                                     },
                                                     leadingIcon = {
                                                         Icon(
@@ -179,12 +166,12 @@ fun ClientDetailScreen(
                                                 DropdownMenuItem(text = { Text("Delete") },
                                                     onClick = {
 
-                                                        clientDetailViewModel.deleteClient(
-                                                            clientData.id_client!!.toInt()
+                                                        voitureDetailViewModel.deleteVoiture(
+                                                            dataVoiture.id_voiture
                                                         )
                                                         expanded = false
                                                         showSuccessMessage = true
-                                                        message = "Client supprimer avec succès"
+
                                                         onBackPressed()
                                                     },
 
@@ -194,153 +181,80 @@ fun ClientDetailScreen(
                                                             contentDescription = null
                                                         )
                                                     })
+
                                             }
                                         }
                                     }
+
                                 }
                             }
                         }
                     }
 
-
-                    //Détail Voiture du Client
-
-
                     item {
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            "Voitures :",
+                            "Réparations :",
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(5.dp)
                         )
-                        if (voitures.isNotEmpty()) {
-                            voitures.forEach { voiture ->
+
+                        if (dataVoiture.reparations.isNotEmpty()) {
+                            dataVoiture.reparations.forEach { reparation ->
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(10.dp)
-                                        .clickable {
-                                            navController.navigate("car_detail/${voiture.id_voiture}")
-                                        },
+                                        .padding(10.dp),
                                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                                 ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    Column(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
-                                        Column(
-                                            modifier = Modifier
-
-                                                .padding(16.dp),
-                                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            Text(
-                                                text = "Marque :${voiture.marque}",
-                                                style = MaterialTheme.typography.titleMedium
-                                            )
-                                            Text(
-                                                text = "Modele : ${voiture.modele}",
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-
-                                            Text(
-                                                text = "Immatriculation : ${voiture.immatriculation} ",
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-
-                                        }
+                                        Text("Description : ${reparation.description}")
+                                        Text("Coût : ${reparation.cout} €")
+                                        Text("Quantité : ${reparation.quantite}")
                                     }
                                 }
                             }
-
                         } else {
-                            Text(
-                                text = "Aucune voiture trouvée",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .align(Alignment.Center)
-                                    .fillMaxWidth()
-                            )
+                            Text("Aucune réparation associée")
                         }
                     }
 
-                    //FIN Détail Voiture du Client
-
-
-                    // Détail Facture du Client
 
                     item {
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             "Factures :",
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(5.dp)
                         )
-                        if (factures.isNotEmpty()) {
-                            factures.forEach { facture ->
+
+                        if (dataVoiture.factures.isNotEmpty()) {
+                            dataVoiture.factures.forEach { facture ->
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(10.dp)
-                                        .clickable {
-                                            navController.navigate("invoice_detail/${facture.id_facture}")
-                                        },
+                                        .padding(10.dp),
                                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                                 ) {
                                     Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
-                                        Text(
-                                            text = "Facture #${facture.id_facture}",
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                        Text(
-                                            text = "Date : ${facture.date}",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        Text(
-                                            text = "Montant total : ${facture.montant} €",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
+                                        Text("Facture # ${facture.id_facture}")
+                                        Text("Date : ${facture.date} €")
+                                        Text("Montant Total : ${facture.montant}")
                                     }
                                 }
                             }
-
                         } else {
-                            Text(
-                                text = "Aucune facture trouvée",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .align(Alignment.Center)
-                                    .fillMaxWidth()
-                            )
+                            Text("Aucune facture associée")
                         }
                     }
-
-                    //FIN Détail Facture du Client
                 }
-            } ?: run {
-                CircularProgressIndicator(  // effet de chargement
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            } ?: CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
     }
 }
-
-@Composable
-fun DetailRow(icon: String, label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = "$icon $label :")
-        Text(text = value)
-    }
-}
-

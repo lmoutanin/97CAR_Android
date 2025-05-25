@@ -7,15 +7,21 @@ import com.pm.carslim.data.models.Client
 import com.pm.carslim.data.models.Facture
 import com.pm.carslim.data.models.Voiture
 import com.pm.carslim.data.remote.ApiService
+import com.pm.carslim.data.remote.RetrofitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import org.json.JSONObject
 
 class ClientDetailViewModel(private val api: ApiService) : ViewModel() {
 
     private val _client = MutableStateFlow<Client?>(null)
     val client: StateFlow<Client?> = _client.asStateFlow()
+
+    private val _voiture = MutableStateFlow<Voiture?>(null)
+    val voiture: StateFlow<Voiture?> = _voiture.asStateFlow()
 
     private val _voitures = MutableStateFlow<List<Voiture>>(emptyList())
     val voitures: StateFlow<List<Voiture>> = _voitures.asStateFlow()
@@ -28,6 +34,10 @@ class ClientDetailViewModel(private val api: ApiService) : ViewModel() {
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val _message = MutableStateFlow("")
+    val message: StateFlow<String> = _message // Message
+
 
     // Méthode pour charger les détails du client
     fun loadClient(clientId: Int) {
@@ -46,7 +56,7 @@ class ClientDetailViewModel(private val api: ApiService) : ViewModel() {
             }
 
             try {
-                val clientVoitures = api.getVoitures(clientId)
+                val clientVoitures = api.getVoituresByClientId(clientId)
                 _voitures.value = clientVoitures
                 Log.d("ClientDetailViewModel", "Voitures chargées : $clientVoitures")
             } catch (e: Exception) {
@@ -64,4 +74,48 @@ class ClientDetailViewModel(private val api: ApiService) : ViewModel() {
             }
         }
     }
+
+
+    // Methode pour supprimer  un client
+    open fun deleteClient(idClient: Int) {
+        viewModelScope.launch {
+            try {
+                addMessage(RetrofitInstance.api.deleteClientById(idClient))
+                Log.d("API", "Client supprimé avec succès")
+
+            } catch (e: Exception) {
+                addMessage()
+                Log.e("API_ERROR", "Erreur lors de la suppression d'un client: ${e.message}")
+                e.printStackTrace()
+
+            }
+        }
+
+    }
+
+    //Methode pour modifier un client
+    open fun editClient(client: Client) {
+        viewModelScope.launch {
+            try {
+                addMessage(RetrofitInstance.api.editClientById(client.id_client!!.toInt(), client))
+                Log.d("API", "modification un client")
+
+            } catch (e: Exception) {
+                addMessage()
+                Log.e("API_ERROR", "Erreur lors de  la modification d'un client: ${e.message}")
+                e.printStackTrace()
+
+            }
+        }
+    }
+
+    // Methode pour  message
+    fun addMessage(response: retrofit2.Response<ResponseBody>? = null) {
+        var message = ""
+        if (response != null) message =
+            JSONObject(response.body()?.string() ?: "").getString("message") else message = "ERREUR"
+        _message.value = message
+    }
+
+
 }

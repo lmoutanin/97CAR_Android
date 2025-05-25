@@ -107,17 +107,20 @@ fun AddClientScreen(
                 ) {
                     Button(
                         onClick = {
-                            val client = Client(nom = nom,
-                                prenom = prenom,
-                                telephone = telephone.takeIf { it.isNotEmpty() },
-                                mel = mel.takeIf { it.isNotEmpty() },
-                                adresse = adresse.takeIf { it.isNotEmpty() },
-                                code_postal = codePostal.takeIf { it.isNotEmpty() },
-                                ville = ville.takeIf { it.isNotEmpty() })
-                            clientViewModel.addClient(client)
-                            showSuccessMessage = true
+                            // Verifier que les champs ne sont pas vide .
+                            if (nom.isNotEmpty() && prenom.isNotEmpty() && telephone.isNotEmpty() && mel.isNotEmpty() && adresse.isNotEmpty() && codePostal.isNotEmpty() && ville.isNotEmpty()) {
 
+                                val client = Client(nom = nom,
+                                    prenom = prenom,
+                                    telephone = telephone.takeIf { it.isNotEmpty() },
+                                    mel = mel.takeIf { it.isNotEmpty() },
+                                    adresse = adresse.takeIf { it.isNotEmpty() },
+                                    code_postal = codePostal.takeIf { it.isNotEmpty() },
+                                    ville = ville.takeIf { it.isNotEmpty() })
+                                clientViewModel.addClient(client)
+                                showSuccessMessage = true
 
+                            }
                         },
                         modifier = Modifier.padding(top = 16.dp),
                         shape = RoundedCornerShape(2.dp)
@@ -126,11 +129,9 @@ fun AddClientScreen(
                         Text("Ajouter")
                         LaunchedEffect(showSuccessMessage) {
                             if (showSuccessMessage) {
-                                delay(200)
+                                delay(500)
                                 Toast.makeText(
-                                    context,
-                                    message + " " + nom + " " + prenom,
-                                    Toast.LENGTH_SHORT
+                                    context, message + " " + nom + " " + prenom, Toast.LENGTH_SHORT
                                 ).show()
                                 showSuccessMessage = false
                                 onBackPressed()

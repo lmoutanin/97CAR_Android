@@ -69,40 +69,6 @@ open class ClientViewModel : ViewModel() {
     }
 
 
-    //Methode pour modifier un client
-    open fun editClient(client: Client) {
-        viewModelScope.launch {
-            try {
-                addMessage(RetrofitInstance.api.editClient(client.id_client.toString(), client))
-                Log.d("API", "modification un client")
-                fetchClients() // Rafraîchir la liste après la modification
-            } catch (e: Exception) {
-                addMessage()
-                Log.e("API_ERROR", "Erreur lors de  la modification d'un client: ${e.message}")
-                e.printStackTrace()
-
-            }
-        }
-    }
-
-    // Methode pour supprimer  un client
-    open fun deleteClient(idClient: String) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.api.deleteClientById(idClient)
-                if (response.isSuccessful) {
-                    Log.d("API", "Client supprimé avec succès")
-                    fetchClients() // Rafraîchir la liste après la suppression
-                } else {
-                    Log.e("API_ERROR", "Échec de la suppression: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("API_ERROR", "Erreur lors de la suppression d'un client: ${e.message}")
-                e.printStackTrace()
-            }
-        }
-    }
-
     // Methode pour  message
     fun addMessage(response: retrofit2.Response<ResponseBody>? = null) {
         var message = ""
@@ -110,7 +76,6 @@ open class ClientViewModel : ViewModel() {
             JSONObject(response.body()?.string() ?: "").getString("message") else message = "ERREUR"
         _message.value = message
     }
-
 
 }
 

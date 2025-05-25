@@ -6,6 +6,7 @@ import com.pm.carslim.data.models.Facture
 import com.pm.carslim.data.models.FactureComplete
 import com.pm.carslim.data.models.Reparation
 import com.pm.carslim.data.models.Voiture
+import com.pm.carslim.data.models.VoitureComplete
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -18,45 +19,69 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    // clients
+    // CLIENT
+
+    // Afficher les Clients
     @GET("clients")
     suspend fun getClients(): List<Client>
 
+    // Afficher un Client
     @GET("clients/{clientId}")
     suspend fun getClientById(@Path("clientId") clientId: Int): Client?
 
+    // Ajouter un Client
     @POST("clients")
     suspend fun addClient(@Body client: Client): Response<ResponseBody>
 
+    // Modifier un Client
     @PUT("putclients/{clientId}")
-    suspend fun editClient(@Path("clientId") clientId: String, @Body client: Client): Response<ResponseBody>
+    suspend fun editClientById(@Path("clientId") clientId: Int, @Body client: Client): Response<ResponseBody>
 
+    // Supprimer un Client
     @DELETE("dropclients/{clientId}")
-    suspend fun deleteClientById(@Path("clientId") clientId: String): Response<ResponseBody>
+    suspend fun deleteClientById(@Path("clientId") clientId: Int): Response<ResponseBody>
 
 
-    // facture détaillée
-    @GET("factures/{factureId}")
-    suspend fun getFactureById(@Path("factureId") factureId: Int): FactureComplete
+    //FACTURE
 
-    // liste des factures pour un client
+    // Afficher des factures pour un client
     @GET("factures")
     suspend fun getFacturesByClientId(@Query("client_id") clientId: Int): List<Facture>
 
+    // Afficher détail une facture
+    @GET("factures/{factureId}")
+    suspend fun getFactureById(@Path("factureId") factureId: Int): FactureComplete
+
+    // Ajouter une facture
     @POST("factures")
     suspend fun addFacture(@Body facture: Facture): Response<ResponseBody>
 
-    // liste des voitures pour un client
-    @GET("voitures")
-    suspend fun getVoitures(@Query("client_id") clientId: Int): List<Voiture>
 
+
+    //VOITURE
+
+    // Afficher des voitures pour un client
+    @GET("voitures")
+    suspend fun getVoituresByClientId(@Query("client_id") clientId: Int): List<Voiture>
+
+    // Afficher détail une voiture
+    @GET("voitures/{voitureId}")
+    suspend fun getVoitureById(@Path("voitureId") voitureId: Int): VoitureComplete
+
+    // Ajouter une voiture
     @POST("voitures")
     suspend fun addVoiture(@Body voiture: Voiture): Response<ResponseBody>
 
-    @GET("reparations")
-    suspend fun getReparation(): List<Reparation>
+    // Modifier une voiture
+    @PUT("putvoitures/{voitureId}")
+    suspend fun editVoitureById(@Path("voitureId") voitureId: Int, @Body voiture: Voiture): Response<ResponseBody>
 
-    @POST("reparations")
-    suspend fun addReparation(@Body reparation: Reparation): Response<ResponseBody>
+    // Supprimer une voiture
+    @DELETE("dropvoitures/{voitureId}")
+    suspend fun deleteVoitureById(@Path("voitureId") voitureId: Int): Response<ResponseBody>
+
+
+
+
 
 }

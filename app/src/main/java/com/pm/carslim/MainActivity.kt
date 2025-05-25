@@ -51,19 +51,24 @@ import androidx.navigation.compose.rememberNavController
 import com.pm.carslim.data.models.Client
 import com.pm.carslim.factory.ClientDetailViewModelFactory
 import com.pm.carslim.factory.FactureDetailViewModelFactory
+import com.pm.carslim.factory.VoitureDetailViewModelFactory
 import com.pm.carslim.ui.client.AddClientScreen
 import com.pm.carslim.ui.client.ClientDetailScreen
 import com.pm.carslim.ui.client.EditClientScreen
 import com.pm.carslim.ui.facture.AddFactureScreen
 import com.pm.carslim.ui.facture.FactureDetailScreen
-import com.pm.carslim.ui.reparation.AddReparationScreen
+
 import com.pm.carslim.ui.theme.CarSlimTheme
 import com.pm.carslim.ui.voiture.AddVoitureScreen
+import com.pm.carslim.ui.voiture.EditVoitureScreen
+
+import com.pm.carslim.ui.voiture.VoitureDetailScreen
 import com.pm.carslim.viewmodels.ClientDetailViewModel
 import com.pm.carslim.viewmodels.ClientViewModel
 import com.pm.carslim.viewmodels.FactureDetailViewModel
 import com.pm.carslim.viewmodels.FactureViewModel
-import com.pm.carslim.viewmodels.ReparationViewModel
+import com.pm.carslim.viewmodels.VoitureDetailViewModel
+
 import com.pm.carslim.viewmodels.VoitureViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -77,11 +82,15 @@ class MainActivity : ComponentActivity() {
         ClientDetailViewModelFactory(applicationContext)
     }
 
-    private val factureViewModel: FactureViewModel by viewModels()
-
-    private val reparationViewModel: ReparationViewModel by viewModels()
 
     private val voitureViewModel: VoitureViewModel by viewModels()
+
+    private val voitureDetailViewModel: VoitureDetailViewModel by viewModels {
+        VoitureDetailViewModelFactory(applicationContext)
+    }
+
+
+    private val factureViewModel: FactureViewModel by viewModels()
 
     private val factureDetailViewModel: FactureDetailViewModel by viewModels {
         FactureDetailViewModelFactory(applicationContext)
@@ -105,63 +114,65 @@ class MainActivity : ComponentActivity() {
                             navigateToAddInvoice = { navController.navigate("add_invoice") },
                             navigateToAddRepair = { navController.navigate("add_repair") })
                     }
-                    composable("client_detail/{id}") { backStackEntry ->
-                        val clientId = backStackEntry.arguments?.getString("id")?.toInt() ?: -1
-                        ClientDetailScreen(clientId,
-                            clientDetailViewModel,
-                            clientViewModel,
-                            navController,
-                            onBackPressed = { navController.popBackStack() })
+
+                    composable("add_client") {
+                        AddClientScreen(clientViewModel = clientViewModel, onBackPressed = {
+                            clientViewModel.fetchClients() // Rafraîchit la liste des clients
+                            navController.popBackStack()
+                        })
                     }
 
                     composable("edit_client/{id}") { backStackEntry ->
                         val clientId = backStackEntry.arguments?.getString("id")?.toInt() ?: -1
-                       EditClientScreen(clientId,
-                           clientDetailViewModel,
-                            clientViewModel,
-                           onBackPressed = {
-                               clientViewModel.fetchClients() // Rafraîchit la liste des clients
-                               navController.popBackStack() })
+                        EditClientScreen(clientId, clientDetailViewModel, onBackPressed = {
+                            clientViewModel.fetchClients() // Rafraîchit la liste des clients
+                            navController.popBackStack()
+                        })
                     }
 
-
-
-                    composable("invoice_detail/{invoiceId}") { backStackEntry ->
-                        val invoiceId =
-                            backStackEntry.arguments?.getString("invoiceId")?.toInt() ?: -1
-                        FactureDetailScreen(viewModel = factureDetailViewModel,
-                            factureId = invoiceId,
+                    composable("client_detail/{id}") { backStackEntry ->
+                        val clientId = backStackEntry.arguments?.getString("id")?.toInt() ?: -1
+                        ClientDetailScreen(clientId,
+                            clientDetailViewModel,
+                            navController,
                             onBackPressed = { navController.popBackStack() })
                     }
 
-
-
-                    composable("add_client") {
-                        AddClientScreen(
-                            clientViewModel = clientViewModel,
-                            onBackPressed = {
-                            clientViewModel.fetchClients() // Rafraîchit la liste des clients
-                            navController.popBackStack() }
-                        )
-                    }
 
                     composable("add_invoice") {
                         AddFactureScreen(factureViewModel = factureViewModel,
                             onBackPressed = { navController.popBackStack() })
                     }
 
+                    composable("invoice_detail/{invoiceId}") { backStackEntry ->
+                        val invoiceId =
+                            backStackEntry.arguments?.getString("invoiceId")?.toInt() ?: -1
+                        FactureDetailScreen(factureDetailViewModel = factureDetailViewModel,
+                            factureId = invoiceId,
+                            onBackPressed = { navController.popBackStack() })
+                    }
+
                     composable("add_car") {
-                        AddVoitureScreen(
-                            voitureViewModel = voitureViewModel,
+                        AddVoitureScreen(voitureViewModel = voitureViewModel,
                             onBackPressed = { navController.popBackStack() })
                     }
 
-                    composable("add_repair") {
-                        AddReparationScreen(
-                            reparationViewModel = reparationViewModel,
-                            onBackPressed = { navController.popBackStack() })
+                    composable("edit_car/{id}") { backStackEntry ->
+                        val voitureId = backStackEntry.arguments?.getString("id")?.toInt() ?: -1
+                        EditVoitureScreen(voitureId, voitureDetailViewModel, onBackPressed = {
+                            voitureViewModel.fetchClients() // Rafraîchit la liste des clients
+                            navController.popBackStack()
+                        })
                     }
 
+
+                    composable("car_detail/{carId}") { backStackEntry ->
+                        val carId = backStackEntry.arguments?.getString("carId")?.toInt() ?: -1
+                        VoitureDetailScreen(voitureDetailViewModel = voitureDetailViewModel,
+                            voitureId = carId,
+                            navController,
+                            onBackPressed = { navController.popBackStack() })
+                    }
 
 
                 }
@@ -181,9 +192,11 @@ fun ClientListScreen(
     navigateToAddInvoice: () -> Unit,
     navigateToAddRepair: () -> Unit
 ) {
+
     val clients by clientViewModel.clients.collectAsState()
     val isLoading by clientViewModel.isLoading.collectAsState()
 
+    clientViewModel.fetchClients()
 
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -241,8 +254,7 @@ fun ClientItem(client: Client, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
@@ -323,8 +335,7 @@ fun PreviewClientListScreen() {
             adresse = "12 rue Véronèse",
             code_postal = "97410",
             ville = "Saint-Pierre"
-        ),
-        Client(
+        ), Client(
             id_client = 2,
             nom = "Durand",
             prenom = "Sophie",
