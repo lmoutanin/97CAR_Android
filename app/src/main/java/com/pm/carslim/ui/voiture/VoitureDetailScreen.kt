@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.pm.carslim.viewmodels.VoitureDetailViewModel
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +64,9 @@ fun VoitureDetailScreen(
 
     LaunchedEffect(showSuccessMessage) {
         if (showSuccessMessage) {
+            delay(500)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            onBackPressed()
             showSuccessMessage = false
         }
     }
@@ -137,8 +140,8 @@ fun VoitureDetailScreen(
                                         // Informations de la voiture
                                         Text("Propriétaire : ${dataVoiture.client.nom} ${dataVoiture.client.prenom}")
                                         Text("Année : ${dataVoiture.annee}")
-                                        Text("Modele : ${dataVoiture.immatriculation}")
                                         Text("Immatriculation : ${dataVoiture.immatriculation}")
+                                        Text("Kilometrage : ${dataVoiture.kilometrage}")
                                     }
                                     Column {
                                         // Menu
@@ -172,7 +175,7 @@ fun VoitureDetailScreen(
                                                         expanded = false
                                                         showSuccessMessage = true
 
-                                                        onBackPressed()
+
                                                     },
 
                                                     leadingIcon = {

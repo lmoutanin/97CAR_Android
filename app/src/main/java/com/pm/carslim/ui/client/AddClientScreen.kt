@@ -110,13 +110,24 @@ fun AddClientScreen(
                             // Verifier que les champs ne sont pas vide .
                             if (nom.isNotEmpty() && prenom.isNotEmpty() && telephone.isNotEmpty() && mel.isNotEmpty() && adresse.isNotEmpty() && codePostal.isNotEmpty() && ville.isNotEmpty()) {
 
-                                val client = Client(nom = nom,
+                                var indice = 0
+                                var newPrenom = ""
+
+                                // Mettre la premier lettre du Prénom en Majuscule
+                                for (i in prenom.indices) {
+                                    if(indice == 0) newPrenom = prenom[i].uppercase() else newPrenom = newPrenom + prenom[i]
+                                    indice += 1
+                                }
+                                prenom = newPrenom
+
+                                // Instancie  object Client
+                                val client = Client(nom = nom.uppercase(),
                                     prenom = prenom,
-                                    telephone = telephone.takeIf { it.isNotEmpty() },
-                                    mel = mel.takeIf { it.isNotEmpty() },
-                                    adresse = adresse.takeIf { it.isNotEmpty() },
-                                    code_postal = codePostal.takeIf { it.isNotEmpty() },
-                                    ville = ville.takeIf { it.isNotEmpty() })
+                                    telephone = telephone  ,
+                                    mel = mel.lowercase()  ,
+                                    adresse = adresse.lowercase() ,
+                                    code_postal = codePostal ,
+                                    ville = ville.uppercase() )
                                 clientViewModel.addClient(client)
                                 showSuccessMessage = true
 

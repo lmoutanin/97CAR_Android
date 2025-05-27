@@ -166,13 +166,13 @@ fun EditVoitureScreen(
                             if (kilometrage == "") kilometrage = voiture?.kilometrage
 
 
-                            // Instancie  object client
+                            // Instancie  object Voiture
                             val editVoiture = Voiture(
                                 id_voiture = voiture?.id_voiture,
                                 annee = annee.toString(),
-                                marque = marque.toString(),
-                                modele = modele.toString(),
-                                immatriculation = immatriculation.toString(),
+                                marque = marque.toString().uppercase(),
+                                modele = modele.toString().uppercase(),
+                                immatriculation = immatriculation.toString().uppercase(),
                                 kilometrage = kilometrage.toString(),
                                 client_id = id_client.toString()
                             )

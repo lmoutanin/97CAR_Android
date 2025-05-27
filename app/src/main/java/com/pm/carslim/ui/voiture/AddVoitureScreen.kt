@@ -170,11 +170,12 @@ fun AddVoitureScreen(
 
                             if (annee.isNotEmpty() && marque.isNotEmpty() && modele.isNotEmpty() && immatriculation.isNotEmpty() && kilometrage.isNotEmpty() && client_id.isNotEmpty()) {
 
+                                // Instancie  object Voiture
                                 val voiture = Voiture(
                                     annee = annee,
-                                    marque = marque,
-                                    modele = modele,
-                                    immatriculation = immatriculation,
+                                    marque = marque.uppercase(),
+                                    modele = modele.uppercase(),
+                                    immatriculation = immatriculation.uppercase(),
                                     kilometrage = kilometrage,
                                     client_id = client_id
                                 )

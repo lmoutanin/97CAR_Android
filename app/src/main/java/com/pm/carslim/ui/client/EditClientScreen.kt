@@ -44,8 +44,8 @@ fun EditClientScreen(
 
     val client by clientDetailViewModel.client.collectAsState()
 
-    var nom by remember { mutableStateOf(client?.nom) }
-    var prenom by remember { mutableStateOf(client?.prenom) }
+    var nom by remember { mutableStateOf(client?.nom?.toString()) }
+    var prenom by remember { mutableStateOf(client?.prenom?.toString()) }
     var telephone by remember { mutableStateOf(client?.telephone) }
     var mel by remember { mutableStateOf(client?.mel) }
     var adresse by remember { mutableStateOf(client?.adresse) }
@@ -123,20 +123,33 @@ fun EditClientScreen(
                             if (codePostal == "") codePostal = client?.code_postal
                             if (ville == "") ville = client?.ville
 
-                            // Instancie  object client
+                            var indice = 0
+                            var newPrenom = ""
+
+                            // Mettre la premier lettre du Prénom en Majuscule
+                            for (i in prenom!!.indices) {
+                                if(indice == 0) newPrenom = prenom!![i].uppercase() else newPrenom = newPrenom + prenom!![i]
+                                indice += 1
+                            }
+                            prenom = newPrenom
+
+
+                            // Instancie  object Client
                             val editclient = Client(
                                 id_client = client?.id_client,
-                                nom = nom.toString(),
+                                nom = nom.toString().uppercase(),
                                 prenom = prenom.toString(),
-                                telephone = telephone,
-                                mel = mel,
-                                adresse = adresse,
+                                telephone = telephone ,
+                                mel = mel.toString().lowercase(),
+                                adresse = adresse.toString().lowercase(),
                                 code_postal = codePostal,
-                                ville = ville
+                                ville = ville.toString().uppercase()
                             )
+
                             // Appel de la methode editClient() pour modifier le client
                             clientDetailViewModel.editClient(editclient)
                             showSuccessMessage = true
+
                         },
 
                         modifier = Modifier.padding(top = 16.dp), shape = RoundedCornerShape(2.dp)
