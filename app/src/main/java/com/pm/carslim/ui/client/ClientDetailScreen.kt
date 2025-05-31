@@ -185,7 +185,7 @@ fun ClientDetailScreen(
                                                         expanded = false
                                                         showSuccessMessage = true
                                                         message = "Client supprimer avec succès"
-                                                        onBackPressed()
+                                                        navController.navigate("client_list")
                                                     },
 
                                                     leadingIcon = {

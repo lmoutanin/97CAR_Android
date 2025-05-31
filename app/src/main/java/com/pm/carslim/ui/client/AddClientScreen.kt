@@ -77,25 +77,33 @@ fun AddClientScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedTextField(value = nom,
-                    onValueChange = { nom = it },
+                    onValueChange = { nom = it.toString() },
                     label = { Text("Nom") })
                 OutlinedTextField(value = prenom,
-                    onValueChange = { prenom = it },
+                    onValueChange = { prenom = it.toString() },
                     label = { Text("Prénom") })
                 OutlinedTextField(value = telephone,
-                    onValueChange = { telephone = it },
+                    onValueChange = {
+                        if (it.length <= 10 && it.all { char -> char.isDigit() }) {
+                            telephone = it
+                        }
+                    },
                     label = { Text("Téléphone") })
                 OutlinedTextField(value = mel,
-                    onValueChange = { mel = it },
+                    onValueChange = { mel = it.toString() },
                     label = { Text("Email") })
                 OutlinedTextField(value = adresse,
-                    onValueChange = { adresse = it },
+                    onValueChange = { adresse = it.toString() },
                     label = { Text("Adresse") })
                 OutlinedTextField(value = codePostal,
-                    onValueChange = { codePostal = it },
+                    onValueChange = {
+                        if (it.length <= 5 && it.all { char -> char.isDigit() }) {
+                           codePostal = it
+                        }
+                    },
                     label = { Text("Code Postal") })
                 OutlinedTextField(value = ville,
-                    onValueChange = { ville = it },
+                    onValueChange = { ville = it.toString() },
                     label = { Text("Ville") })
 
                 Box(
@@ -110,24 +118,16 @@ fun AddClientScreen(
                             // Verifier que les champs ne sont pas vide .
                             if (nom.isNotEmpty() && prenom.isNotEmpty() && telephone.isNotEmpty() && mel.isNotEmpty() && adresse.isNotEmpty() && codePostal.isNotEmpty() && ville.isNotEmpty()) {
 
-                                var indice = 0
-                                var newPrenom = ""
 
-                                // Mettre la premier lettre du Prénom en Majuscule
-                                for (i in prenom.indices) {
-                                    if(indice == 0) newPrenom = prenom[i].uppercase() else newPrenom = newPrenom + prenom[i]
-                                    indice += 1
-                                }
-                                prenom = newPrenom
 
                                 // Instancie  object Client
-                                val client = Client(nom = nom.uppercase(),
-                                    prenom = prenom,
-                                    telephone = telephone  ,
-                                    mel = mel.lowercase()  ,
-                                    adresse = adresse.lowercase() ,
+                                val client = Client(nom = nom.uppercase() ,
+                                    prenom = prenom.lowercase() ,
+                                    telephone = telephone   ,
+                                    mel = mel.lowercase()   ,
+                                    adresse = adresse.lowercase()  ,
                                     code_postal = codePostal ,
-                                    ville = ville.uppercase() )
+                                    ville = ville.uppercase()  )
                                 clientViewModel.addClient(client)
                                 showSuccessMessage = true
 

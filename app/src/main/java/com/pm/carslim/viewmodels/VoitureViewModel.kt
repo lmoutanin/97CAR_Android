@@ -45,11 +45,11 @@ class VoitureViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 addMessage(RetrofitInstance.api.addVoiture(voiture))
-                Log.d("API", "ajout d'une facture")
+                Log.d("API", "ajout d'une voiture")
 
             } catch (e: Exception) {
                 addMessage()
-                Log.e("API_ERROR", "Erreur lors de l'ajout d'une facture: ${e.message}")
+                Log.e("API_ERROR", "Erreur lors de l'ajout d'une voiture: ${e.message}")
                 e.printStackTrace()
 
             }

@@ -139,7 +139,11 @@ fun AddVoitureScreen(
                         .padding(horizontal = 30.dp),
                     label = { Text("Modèle") })
                 OutlinedTextField(value = annee,
-                    onValueChange = { annee = it },
+                    onValueChange = {
+                        if (it.length <= 4 && it.all { char -> char.isDigit() }) {
+                            annee = it
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 30.dp),
@@ -154,7 +158,11 @@ fun AddVoitureScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 30.dp),
-                    onValueChange = { kilometrage = it },
+                    onValueChange = {
+                        if (it.length <= 6 && it.all { char -> char.isDigit() }) {
+                            kilometrage = it
+                        }
+                    },
                     label = { Text("Kilométrage") })
 
 

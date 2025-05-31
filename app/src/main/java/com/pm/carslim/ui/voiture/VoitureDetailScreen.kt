@@ -59,17 +59,9 @@ fun VoitureDetailScreen(
 
     // Affiche un message de suppresion , edit
     var showSuccessMessage by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf("") }
+    val message by voitureDetailViewModel.message.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(showSuccessMessage) {
-        if (showSuccessMessage) {
-            delay(500)
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            onBackPressed()
-            showSuccessMessage = false
-        }
-    }
 
     // Charge la facture avec l'ID récupéré via les arguments
     LaunchedEffect(voitureId) {
@@ -260,4 +252,13 @@ fun VoitureDetailScreen(
             } ?: CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
     }
+    LaunchedEffect(showSuccessMessage) {
+        if (showSuccessMessage) {
+            delay(500)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            onBackPressed()
+            showSuccessMessage = false
+        }
+    }
+
 }
