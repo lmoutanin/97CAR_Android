@@ -77,10 +77,10 @@ fun AddClientScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedTextField(value = nom,
-                    onValueChange = { nom = it.toString() },
+                    onValueChange = { nom = it},
                     label = { Text("Nom") })
                 OutlinedTextField(value = prenom,
-                    onValueChange = { prenom = it.toString() },
+                    onValueChange = { prenom = it },
                     label = { Text("Prénom") })
                 OutlinedTextField(value = telephone,
                     onValueChange = {
@@ -90,10 +90,10 @@ fun AddClientScreen(
                     },
                     label = { Text("Téléphone") })
                 OutlinedTextField(value = mel,
-                    onValueChange = { mel = it.toString() },
+                    onValueChange = { mel = it },
                     label = { Text("Email") })
                 OutlinedTextField(value = adresse,
-                    onValueChange = { adresse = it.toString() },
+                    onValueChange = { adresse = it },
                     label = { Text("Adresse") })
                 OutlinedTextField(value = codePostal,
                     onValueChange = {
@@ -103,7 +103,7 @@ fun AddClientScreen(
                     },
                     label = { Text("Code Postal") })
                 OutlinedTextField(value = ville,
-                    onValueChange = { ville = it.toString() },
+                    onValueChange = { ville = it },
                     label = { Text("Ville") })
 
                 Box(
@@ -121,13 +121,13 @@ fun AddClientScreen(
 
 
                                 // Instancie  object Client
-                                val client = Client(nom = nom.uppercase() ,
-                                    prenom = prenom.lowercase() ,
+                                val client = Client(nom = nom ,
+                                    prenom = prenom,
                                     telephone = telephone   ,
-                                    mel = mel.lowercase()   ,
-                                    adresse = adresse.lowercase()  ,
+                                    mel = mel   ,
+                                    adresse = adresse ,
                                     code_postal = codePostal ,
-                                    ville = ville.uppercase()  )
+                                    ville = ville  )
                                 clientViewModel.addClient(client)
                                 showSuccessMessage = true
 
